@@ -1,10 +1,10 @@
 # Curve_Fitting
 
-A C++ program for fitting experimental data to mathematical curves using the **Least Squares Method (LSS)**.
+A C++ program that performs curve fitting of experimental data using the **Least Squares Method (LSS)**.
 
 ## Supported Curves
 
-The program performs curve fitting for:
+The tool fits data to the following models:
 
 * **Linear Curve**
   y = a + bx
@@ -20,7 +20,7 @@ The program performs curve fitting for:
 
 ## Method Used
 
-All models are fitted using the **Least Squares Method (LSS)**.
+All curve fitting is performed using the **Least Squares Method**.
 
 ## Compilation
 
