@@ -237,6 +237,73 @@ class Quadratic_Fit : public input{
     }
 };
 
+class Exponential_Fit : public input{
+
+    private:
+
+    double A = 0;
+    double B = 0;
+
+    double sum_log_Y = 0;
+    double sum_X_logY = 0;
+
+    public:
+
+    void Exponential_Sums(){
+
+        sum_log_Y = sum_X_logY = 0;
+
+        int n = GETn();
+
+        for(int m = 0 ; m < n ; m++){
+
+            double Exponential_X = getX(m);
+            double Exponential_Y = getY(m);
+
+            if(Exponential_Y <= 0){
+                cout<<"Exponential Fit is not possible (y < 0)"<<endl;
+                return;
+            }
+
+            sum_log_Y += log(Exponential_Y);
+            sum_X_logY += (Exponential_X*log(Exponential_Y));
+
+        }
+
+    }
+
+
+    void fit_Exponential(){
+
+        Exponential_Sums();
+
+        int n = GETn();
+
+        double log_B = ((n*sum_X_logY)-(sum_X)*(sum_log_Y)) / ((n*sum_X_squared)-((sum_X*sum_X)));
+        double log_A = ((sum_log_Y)-(log_B*sum_X)) / n ;
+
+        A = exp(log_A);
+        B = exp(log_B);
+
+
+        cout<<endl;
+        cout<<"---------------------------------------------------------"<<endl;
+        cout<<endl;
+        cout<<"The coefficents of the Exponential Curve are : "<<endl;
+        cout<<"a = "<<A<<endl;
+        cout<<"b = "<<B<<endl;
+        cout<<endl;
+        cout<<"---------------------------------------------------------"<<endl;
+        cout<<endl;
+        cout<<"The best fit Exponential curve is : "<<"y = "<<A<<" ("<<B<<")^x"<<endl;
+        cout<<endl;
+        cout<<"---------------------------------------------------------"<<endl;
+        
+    }
+
+
+};
+
 int main(int argc, char const *argv[])
 {
 
@@ -267,6 +334,13 @@ int main(int argc, char const *argv[])
     {
         Quadratic_Fit Parabola;
         Parabola.fit_Quadratic();
+        break;
+    }
+
+    case 'C':
+    {
+        Exponential_Fit Exponential;
+        Exponential.fit_Exponential();
         break;
     }
 
