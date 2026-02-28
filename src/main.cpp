@@ -261,7 +261,7 @@ class Exponential_Fit : public input{
             double Exponential_Y = getY(m);
 
             if(Exponential_Y <= 0){
-                cout<<"Exponential Fit is not possible (y < 0)"<<endl;
+                cout<<"Exponential Fit is not possible (y <= 0)"<<endl;
                 return;
             }
 
@@ -304,6 +304,78 @@ class Exponential_Fit : public input{
 
 };
 
+class Power_Fit : public input{
+
+    private:
+
+    double A = 0;
+    double B = 0;
+
+    double sum_log_X = 0;
+    double sum_log_Y = 0;
+    double sum_logX_squared = 0;
+    double sum_logX_logY = 0;
+
+    public:
+
+    void Power_Sums(){
+
+        sum_log_X = sum_log_Y = sum_logX_squared = sum_logX_logY = 0; 
+
+        int n = GETn();
+
+        for(int m = 0 ; m < n ; m++){
+
+            double Power_X = getX(m);
+            double Power_Y = getY(m);
+
+            if(Power_X <= 0 ||Power_Y <= 0){
+                cout<<"Power Fit is not possible (x <= 0 or y <= 0)"<<endl;
+                return;
+            }
+
+            sum_log_X += log(Power_X);
+            sum_log_Y += log(Power_Y);
+            sum_logX_squared += ((log(Power_X))*(log(Power_X)));
+            sum_logX_logY += ((log(Power_X))*(log(Power_Y)));
+
+        }
+
+    }
+
+
+    void fit_Power(){
+
+        Power_Sums();
+
+        int n = GETn();
+
+        B = ((n*sum_logX_logY)-(sum_log_X)*(sum_log_Y)) / ((n*sum_logX_squared)-((sum_log_X*sum_log_X)));
+        double log_A = ((sum_log_Y)-(B*sum_log_X)) / n ;
+
+        A = exp(log_A);
+
+
+        cout<<endl;
+        cout<<"---------------------------------------------------------"<<endl;
+        cout<<endl;
+        cout<<"The coefficents of the Power Curve are : "<<endl;
+        cout<<"a = "<<A<<endl;
+        cout<<"b = "<<B<<endl;
+        cout<<endl;
+        cout<<"---------------------------------------------------------"<<endl;
+        cout<<endl;
+        cout<<"The best fit Power curve is : "<<"y = "<<A<<" x ^("<<B<<")"<<endl;
+        cout<<endl;
+        cout<<"---------------------------------------------------------"<<endl;
+        
+    }
+
+
+};
+
+
+
 int main(int argc, char const *argv[])
 {
 
@@ -341,6 +413,13 @@ int main(int argc, char const *argv[])
     {
         Exponential_Fit Exponential;
         Exponential.fit_Exponential();
+        break;
+    }
+
+    case 'D':
+    {
+        Power_Fit Power;
+        Power.fit_Power();
         break;
     }
 
