@@ -1,4 +1,4 @@
-# Curve_Fitting
+# Curve Fitting
 
 A C++ program that performs curve fitting of experimental data using the **Least Squares Method (LSS)**.
 
