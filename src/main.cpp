@@ -1,6 +1,8 @@
 #include<iostream>
+#include<cstdio>
 #include<cctype>
 #include<vector>
+#include<algorithm>
 #include<cmath>
 using namespace std;
 
@@ -14,10 +16,43 @@ class input{
     
     protected:
 
+    double minX , minY;
+    double maxX , maxY;
+    double maxabsX , maxabsY;
+    double M;
+
     double sum_X = 0;
     double sum_Y = 0;
     double sum_XY = 0;
     double sum_X_squared = 0;
+
+    void min_max(){
+
+        minX = maxX = X[0];
+        minY = maxY = Y[0];
+
+        for(int i = 1 ; i < n ; i++){
+        
+            if(X[i] < minX){
+                minX = X[i];
+            }
+
+            if(Y[i] < minY){
+                minY = Y[i];
+            }
+
+            if(X[i] > maxX){
+                maxX = X[i];
+            }
+
+            if(Y[i] > maxY){
+                maxY = Y[i];
+            }
+
+        }
+
+    }
+
        
     void Basic_Sums(){
 
@@ -35,16 +70,16 @@ class input{
 
     }
 
+    int GETn(){
+        return n;
+    }
+
     double getX(int j){
         return X[j];
     }
 
     double getY(int k){
         return Y[k];
-    }
-
-    int GETn(){
-        return n;
     }
 
     public:
@@ -56,6 +91,11 @@ class input{
 
         cout<<"Enter number of sample points : ";
         cin>>n;
+
+        if(n<=0){
+            cout<<"Number of data points need to greater than 0";
+            return;
+        }
 
         X.resize(n);
         Y.resize(n);
@@ -75,6 +115,21 @@ class input{
         }
 
         Basic_Sums();
+
+        min_max();
+        maxabsX = std::max(std::abs(minX), std::abs(maxX));
+        maxabsY = std::max(std::abs(minY), std::abs(maxY));
+
+        maxabsX *= 1.1;
+        maxabsY *= 1.1;
+
+        M = std::max(maxabsX,maxabsY);
+
+        if (M < 1e-9)
+        {
+            M = 1;
+        }
+        
     }
 
 };
@@ -129,6 +184,50 @@ class Linear_Fit : public input{
         cout<<endl;
         cout<<"---------------------------------------------------------"<<endl;
 
+
+
+        FILE* pipe = _popen("gnuplot -persistent", "w");
+
+        if(pipe == nullptr){
+            cout<<"Problem opening gnuplot";
+            return;
+        }
+
+        fprintf(pipe, "set title 'Linear Curve'\n");
+        fprintf(pipe, "set xlabel 'X'\n");
+        fprintf(pipe, "set ylabel 'Y'\n");
+
+        fprintf(pipe, "set size ratio -1\n");
+
+        fprintf(pipe, "set xrange [-%f:%f]\n", M , M);
+        fprintf(pipe, "set yrange [-%f:%f]\n", M , M);
+
+        fprintf(pipe, "set xzeroaxis\n");
+        fprintf(pipe, "set yzeroaxis\n");
+
+        fprintf(pipe, "set grid\n");
+        fprintf(pipe, "set samples 1000\n");
+
+
+        fprintf(pipe, "f(x) = %f + %f*x\n", a, b);
+        fprintf(pipe, "set label \"y = %.6f + %.6fx\" at graph 0.05,0.9\n",a,b);
+
+
+        fprintf(pipe, "unset key\n");
+        fprintf(pipe, "plot '-' with points pt 7 ps 1.5 title 'Data Points', ");
+        fprintf(pipe, "f(x) with lines lw 2 title 'Fitted Line'\n");
+
+
+        for(int i = 0 ; i < n ; i++){
+            fprintf(pipe, "%f %f\n",getX(i),getY(i));
+        }
+
+
+        fprintf(pipe,"e\n");
+
+
+        fflush(pipe);
+        _pclose(pipe);
 
     }
 
@@ -373,7 +472,6 @@ class Power_Fit : public input{
 
 
 };
-
 
 
 int main(int argc, char const *argv[])
